@@ -1,4 +1,4 @@
-package com.example.proyfinal.ui.screens
+package com.example.proyfinal.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +16,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyfinal.navigation.Screen
 import com.example.proyfinal.ui.theme.Blue
+import com.example.proyfinal.ui.theme.Blue
+import com.example.proyfinal.ui.theme.BlueLight
+import com.example.proyfinal.ui.theme.GreenTaken
+import com.example.proyfinal.ui.theme.RedMissed
 
 @Composable
 fun LoginScreen(navController: NavController) {

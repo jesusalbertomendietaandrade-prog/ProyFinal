@@ -1,13 +1,13 @@
-package com.example.proyfinal.ui.screens
+package com.example.proyfinal.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,7 +18,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyfinal.navigation.Screen
-import com.example.proyfinal.ui.theme.*
+import com.example.proyfinal.ui.theme.Blue
+import com.example.proyfinal.ui.theme.BlueLight
+import com.example.proyfinal.ui.theme.GreenTaken
+import com.example.proyfinal.ui.theme.RedMissed
 
 data class HistoryItem(val medName: String, val taken: Boolean, val time: String)
 
@@ -29,7 +32,7 @@ fun HistoryScreen(navController: NavController) {
 
     val history = listOf(
         HistoryItem("Metformina", true,  "08:02 AM"),
-        HistoryItem("Losartán",   true,  "07:00 AM"),
+        HistoryItem("Losartan",   true,  "07:00 AM"),
         HistoryItem("Omeprazol",  false, "12:00 PM"),
         HistoryItem("Metformina", true,  "04:03 PM")
     )
@@ -60,12 +63,15 @@ fun HistoryScreen(navController: NavController) {
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.List, contentDescription = null) },
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
                     label = { Text("Historial") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
+                    onClick = {
+                        selectedTab = 2
+                        navController.navigate(Screen.Profile.route)
+                    },
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text("Perfil") }
                 )
@@ -78,31 +84,33 @@ fun HistoryScreen(navController: NavController) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // Tarjeta de adherencia
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = BlueLight),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("87%", fontSize = 48.sp, fontWeight = FontWeight.Bold, color = Blue)
-                    Text("Adherencia semanal", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("87%", fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold, color = Blue)
+                    Text("Adherencia semanal",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             Text("Registro de dosis", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-
             Spacer(modifier = Modifier.height(8.dp))
-
             LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 items(history) { item ->
                     HistoryRow(item)
-                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                    HorizontalDivider(
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                 }
             }
         }
@@ -127,11 +135,12 @@ fun HistoryRow(item: HistoryItem) {
         Column(modifier = Modifier.weight(1f)) {
             Text(item.medName, fontWeight = FontWeight.Bold, fontSize = 15.sp)
             Text(
-                text = if (item.taken) "✔ Tomado" else "✘ Omitido",
+                text = if (item.taken) "Tomado" else "Omitido",
                 fontSize = 13.sp,
                 color = if (item.taken) GreenTaken else RedMissed
             )
         }
-        Text(item.time, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(item.time, fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

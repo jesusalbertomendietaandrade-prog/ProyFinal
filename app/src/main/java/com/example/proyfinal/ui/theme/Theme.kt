@@ -1,21 +1,21 @@
 package com.example.proyfinal.ui.theme
 
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val Blue = Color(0xFF4A90D9)
-val BlueDark = Color(0xFF357ABD)
+val Blue       = Color(0xFF4A90D9)
+val BlueLight  = Color(0xFFEBF5FF)
 val GreenTaken = Color(0xFF27AE60)
-val RedMissed = Color(0xFFE74C3C)
-val BlueLight = Color(0xFFEBF5FF)
+val RedMissed  = Color(0xFFE74C3C)
 
 private val LightColors = lightColorScheme(
-    primary = Blue,
-    onPrimary = Color.White,
+    primary          = Blue,
+    onPrimary        = Color.White,
     primaryContainer = BlueLight,
-    background = Color.White,
-    surface = Color.White
+    background       = Color.White,
+    surface          = Color.White
 )
 
 @Composable
