@@ -1,30 +1,36 @@
-package com.example.proyfinal.screens
+package com.example.proyfinal.ui.theme.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.proyfinal.navigation.Screen
-import com.example.proyfinal.ui.theme.Blue
-import com.example.proyfinal.ui.theme.Blue
-import com.example.proyfinal.ui.theme.BlueLight
-import com.example.proyfinal.ui.theme.GreenTaken
-import com.example.proyfinal.ui.theme.RedMissed
+import com.example.proyfinal.R
+import com.example.proyfinal.viewmodel.AuthState
+import com.example.proyfinal.viewmodel.AuthViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
+fun LoginScreen(
+    authViewModel: AuthViewModel,
+    onLoginExitoso: () -> Unit,
+    onIrARegistro: () -> Unit
+) {
+    var email    by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    val authState by authViewModel.authState.collectAsState()
+
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Success) {
+            authViewModel.resetState()
+            onLoginExitoso()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -34,60 +40,77 @@ fun LoginScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "MediAlert",
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold,
-            color = Blue
+            text  = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.primary
         )
+        Spacer(Modifier.height(8.dp))
         Text(
-            text = "App de Recordatorios de Medicamentos",
-            fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 40.dp)
+            text  = stringResource(R.string.app_subtitle),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        Spacer(Modifier.height(40.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo electrónico") },
+            value         = email,
+            onValueChange = {
+                email = it
+                authViewModel.resetError()   // limpia el error al escribir
+            },
+            label         = { Text(stringResource(R.string.email)) },
+            singleLine    = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier      = Modifier.fillMaxWidth()
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
+            value         = password,
+            onValueChange = {
+                password = it
+                authViewModel.resetError()   // limpia el error al escribir
+            },
+            label               = { Text(stringResource(R.string.password)) },
+            singleLine          = true,
             visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            keyboardOptions     = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier            = Modifier.fillMaxWidth()
         )
+        Spacer(Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = { navController.navigate(Screen.Home.route) {
-                popUpTo(Screen.Login.route) { inclusive = true }
-            }},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text("Iniciar Sesión", fontSize = 16.sp)
+        if (authState is AuthState.Error) {
+            Text(
+                text  = (authState as AuthState.Error).mensaje,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(8.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "¿No tienes cuenta? Regístrate",
-            color = Blue,
-            modifier = Modifier.clickable {
-                navController.navigate(Screen.Register.route)
+        Button(
+            onClick = {
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    authViewModel.login(email.trim(), password)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled  = authState !is AuthState.Loading
+        ) {
+            if (authState is AuthState.Loading) {
+                CircularProgressIndicator(
+                    modifier    = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color       = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text(stringResource(R.string.login))
             }
-        )
+        }
+        Spacer(Modifier.height(12.dp))
+
+        TextButton(onClick = onIrARegistro) {
+            Text(stringResource(R.string.no_account))
+        }
     }
 }
